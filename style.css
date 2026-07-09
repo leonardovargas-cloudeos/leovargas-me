@@ -1,0 +1,182 @@
+/* ─── RESET ─────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #080806;
+  --text: #e8e4dc;
+  --muted: rgba(232,228,220,0.38);
+  --serif: 'Cormorant Garamond', Georgia, serif;
+  --mono: 'IBM Plex Mono', monospace;
+}
+
+html, body { width: 100%; overflow-x: hidden; }
+body { background: var(--bg); color: var(--text); font-family: var(--mono); }
+
+/* ─── NAV ────────────────────────────────────────── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  padding: 1.6rem 2.4rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 100;
+}
+.nav-name {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text);
+  text-decoration: none;
+}
+.nav-links { display: flex; gap: 2rem; }
+.nav-links a {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+.nav-links a:hover,
+.nav-links a.active { color: var(--text); }
+
+/* ─── HOME: OPENING ──────────────────────────────── */
+body.home {
+  overflow: hidden;
+  height: 100dvh;
+}
+.opening {
+  position: relative;
+  width: 100vw;
+  height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+#painting {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+.cursor-light {
+  position: fixed;
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(210,185,145,0.13) 0%, transparent 70%);
+  z-index: 1;
+  transition: opacity 0.4s ease;
+}
+.opening-center {
+  position: relative;
+  z-index: 3;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 1.4s ease, transform 1.4s ease;
+}
+.opening-center.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.name {
+  font-family: var(--mono);
+  font-size: clamp(0.85rem, 2vw, 1.1rem);
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--text);
+  font-weight: 300;
+  margin-bottom: 1.2rem;
+}
+.thesis {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 300;
+  font-size: clamp(1.1rem, 3vw, 1.6rem);
+  color: var(--muted);
+  margin-bottom: 2.8rem;
+  line-height: 1.4;
+}
+.enter-link {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(232,228,220,0.2);
+  padding-bottom: 2px;
+  transition: color 0.3s, border-color 0.3s;
+}
+.enter-link:hover { color: var(--text); border-color: var(--text); }
+
+/* ─── ARCHIVE ────────────────────────────────────── */
+body.archive-page { overflow: hidden; height: 100dvh; }
+
+.archive {
+  height: 100dvh;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+}
+
+.project-slide {
+  position: relative;
+  height: 100dvh;
+  width: 100vw;
+  scroll-snap-align: start;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.slide-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  transform: scale(1.04);
+  transition: transform 1.2s ease, opacity 0.9s ease;
+  opacity: 0;
+  z-index: 0;
+}
+.project-slide.is-active .slide-bg {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.eos-bg {
+  background: radial-gradient(ellipse at center, #1a1508 0%, #080806 100%);
+  opacity: 1 !important;
+}
+
+.slide-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom,
+    rgba(8,8,6,0.2) 0%,
+    rgba(8,8,6,0.5) 100%);
+  z-index: 1;
+}
+
+.slide-center {
+  position: relative;
+  z-index: 3;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+}
+.slide-title {
+  font-family: var(--serif);
+  font-style: italic;
+  
