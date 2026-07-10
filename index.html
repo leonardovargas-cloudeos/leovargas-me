@@ -1,27 +1,117 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Leonardo Vargas</title>
-  >
-  //fonts.googleapis.com">
-  //fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300;1,400&family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leonardo Vargas</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300;1,400&family=IBM+Plex+Mono:wght@300;400&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:#080806;color:#e8e4dc}
+canvas{position:fixed;inset:0;z-index:0;display:block}
+.light{position:fixed;width:380px;height:380px;border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(210,185,145,0.09) 0%,transparent 68%);z-index:1;top:-999px;left:-999px}
+.center{position:fixed;inset:0;z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;opacity:0;transform:translateY(10px);transition:opacity 2s ease,transform 2s ease}
+.center.on{opacity:1;transform:translateY(0)}
+.name{font-family:'IBM Plex Mono',monospace;font-size:clamp(0.65rem,1.6vw,0.88rem);letter-spacing:0.38em;text-transform:uppercase;color:#e8e4dc;font-weight:300;margin-bottom:1.8rem}
+.thesis{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;font-size:clamp(1.3rem,3.2vw,2rem);color:rgba(232,228,220,0.5);margin-bottom:3.4rem;line-height:1.55;max-width:520px}
+.enter{font-family:'IBM Plex Mono',monospace;font-size:0.6rem;letter-spacing:0.3em;text-transform:uppercase;color:rgba(232,228,220,0.32);text-decoration:none;border-bottom:1px solid rgba(232,228,220,0.12);padding-bottom:3px;transition:color 0.4s,border-color 0.4s}
+.enter:hover{color:#e8e4dc;border-color:rgba(232,228,220,0.45)}
+</style>
 </head>
-<body class="home">
+<body>
+anvas id="c"></canvas>
+<div class="light" id="l"></div>
+<div class="center" id="ct">
+  <p class="name">Leonardo Vargas</p>
+  <p class="thesis">I admire something for what it is trying to become.</p>
+  <a class="enter" href="archive.html">Enter</a>
+</div>
+<script>
+const l=document.getElementById('l');
+document.addEventListener('mousemove',e=>{l.style.left=e.clientX+'px';l.style.top=e.clientY+'px'});
 
-  <main class="opening" id="opening">
-    anvas id="painting"></canvas>
-    <div class="cursor-light" id="cursorLight"></div>
+const canvas=document.getElementById('c');
+const ctx=canvas.getContext('2d');
+function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight}
+resize();
+window.addEventListener('resize',resize);
 
-    <div class="opening-center" id="openingCenter">
-      <h1 class="name">Leonardo Vargas</h1>
-      <p class="thesis">I admire something for what it is trying to become.</p>
-      <a href="archive.html" class="enter-link">Enter</a>
-    </div>
-  </main>
+const seed=parseFloat(localStorage.getItem('lv-seed')||Math.random().toFixed(6));
+localStorage.setItem('lv-seed',seed);
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
-  <script src="main.js"></script>
+function sr(n){const x=Math.sin(seed*9301+n*49297)*93458;return x-Math.floor(x)}
+
+const hue=28+seed*18;
+const lp=4+seed*3;
+
+function ground(){
+  const g=ctx.createRadialGradient(canvas.width*.5,canvas.height*.46,0,canvas.width*.5,canvas.height*.5,canvas.width*.75);
+  g.addColorStop(0,`hsl(${hue},18%,${lp+3}%)`);
+  g.addColorStop(1,`hsl(${hue},10%,${lp-1}%)`);
+  ctx.fillStyle=g;
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+}
+
+const marks=[];
+let mc=0,frame=0,rp=0,rs=false;
+const MAX=58,MI=6;
+
+function spawn(i){
+  marks.push({
+    x:sr(i*3)*canvas.width,
+    y:sr(i*3+1)*canvas.height,
+    len:20+sr(i*3+2)*90,
+    angle:sr(i*7)*Math.PI*2,
+    alpha:0.035+sr(i*11)*0.08,
+    w:0.3+sr(i*13)*1.1,
+    loop:sr(i*5)>0.62,
+    p:0
+  });
+}
+
+function drawMark(m){
+  ctx.save();
+  ctx.translate(m.x,m.y);
+  ctx.rotate(m.angle);
+  ctx.strokeStyle=`rgba(210,185,145,${m.alpha*m.p})`;
+  ctx.lineWidth=m.w;
+  ctx.lineCap='round';
+  ctx.beginPath();
+  if(m.loop){ctx.arc(0,0,m.len*0.38*m.p,0,Math.PI*1.35)}
+  else{ctx.moveTo(0,0);ctx.lineTo(m.len*m.p,sr(m.len)*5-2.5)}
+  ctx.stroke();
+  ctx.restore();
+}
+
+function ridge(){
+  if(!rs)return;
+  const y=canvas.height*0.34;
+  const sx=canvas.width*0.28,ex=canvas.width*0.72;
+  ctx.save();
+  ctx.strokeStyle=`rgba(232,218,185,${0.16*rp})`;
+  ctx.lineWidth=0.55;
+  ctx.shadowColor='rgba(232,218,185,0.2)';
+  ctx.shadowBlur=10;
+  ctx.beginPath();
+  ctx.moveTo(sx,y);
+  ctx.lineTo(sx+(ex-sx)*rp,y);
+  ctx.stroke();
+  ctx.restore();
+}
+
+function tick(){
+  requestAnimationFrame(tick);
+  frame++;
+  ground();
+  if(mc<MAX&&frame%MI===0){spawn(mc);mc++}
+  marks.forEach(m=>{m.p=Math.min(1,m.p+0.035);drawMark(m)});
+  if(frame>55){rs=true;rp=Math.min(1,rp+0.007)}
+  ridge();
+  if(frame===145)document.getElementById('ct').classList.add('on');
+}
+
+ground();
+tick();
+</script>
 </body>
 </html>
